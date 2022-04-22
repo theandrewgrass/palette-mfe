@@ -10,7 +10,7 @@ const prodConfig = {
     },
     plugins: [
         new ModuleFederationPlugin({
-            name: 'projectPalette',
+            name: 'projectpalette',
             filename: 'remoteEntry.js',
             exposes: {
                 './projectPalette': './src/bootstrap',

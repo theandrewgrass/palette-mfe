@@ -8,9 +8,8 @@ const packageJson = require ('../package.json');
 
 const devConfig = {
     mode: 'development',
-    target: 'web',
     devServer: {
-        port: 3000,
+        port: 8083,
         host: 'theandrewgrass.dev.com',
         allowedHosts: [
             'theandrewgrass.dev.com',
@@ -26,7 +25,7 @@ const devConfig = {
         historyApiFallback: true,
         hot: true,
         open: true,
-        watchFiles: [ 'src/**/*' ]
+        watchFiles: [ 'src/**/*' ],
     },
     plugins: [
         new HtmlWebpackPlugin({
@@ -36,7 +35,7 @@ const devConfig = {
             inject: 'head',
         }),
         new ModuleFederationPlugin({
-            name: 'projectPalette',
+            name: 'projectpalette',
             filename: 'remoteEntry.js',
             exposes: {
                 './projectPalette': './src/bootstrap',
