@@ -27,9 +27,6 @@ const devConfig = {
         open: true,
         watchFiles: [ 'src/**/*' ],
     },
-    output: {
-      publicPath: 'auto', // this is required for module federation host to resolve dependencies
-    },
     plugins: [
         new HtmlWebpackPlugin({
             filename: 'index.html',
