@@ -64,6 +64,11 @@ export default () => {
     reader.readAsDataURL(file);
   };
 
+  const clearImage = () => {
+    setImageSrc('');
+    setThiefColor('');
+  }
+
   return (
     <div 
       style={{ 
@@ -118,7 +123,7 @@ export default () => {
       </DragDrop>
       <div style={{ backgroundColor: thiefColor, width: '50px', height: '50px'}}></div>
       <input ref={imageUploadButton} type="file" onChange={(e) => { handleImageDrop(e.target); }} style={{ display: 'none' }} />
-      <button type="button" onClick={() => setImageSrc('')}>Clear Image</button>
+      <button type="button" onClick={clearImage}>Clear Image</button>
     </div>
   );
 }

@@ -22,6 +22,10 @@ const devConfig = {
                 ca: fs.readFileSync('ca.crt'),
             },
         },
+        // fix CORS issues with Gatsby
+        headers: {
+          'Access-Control-Allow-Origin': '*'
+        },
         historyApiFallback: true,
         hot: true,
         open: true,
