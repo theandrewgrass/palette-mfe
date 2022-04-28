@@ -12,7 +12,7 @@ const mount = (el) => {
 };
 
 // in development and isolation, mount immediately
-if (process.env.NODE_ENV === 'development') {
+if (process.env.BUILD_ENV === 'development') {
     const devRoot = document.querySelector('#_project_palette_dev_root');
 
     // we have an element with the id, therefore likely not in the container
