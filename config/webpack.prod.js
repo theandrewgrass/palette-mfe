@@ -17,6 +17,9 @@ const prodConfig = {
             },
             shared: packageJson.dependencies
         }),
+        new webpack.ProvidePlugin({
+          process: 'process/browser'
+        }),
     ]
 };
 
