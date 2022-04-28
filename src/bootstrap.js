@@ -12,15 +12,15 @@ const mount = (el) => {
 };
 
 // in development and isolation, mount immediately
-// if (process.env.BUILD_ENV === 'development') {
-//     const devRoot = document.querySelector('#_project_palette_dev_root');
+if (process.env.BUILD_ENV === 'development') {
+    const devRoot = document.querySelector('#_project_palette_dev_root');
 
-//     // we have an element with the id, therefore likely not in the container
-//     // and can mount
-//     if (devRoot) {
-//         mount(devRoot);
-//     }
-// }
+    // we have an element with the id, therefore likely not in the container
+    // and can mount
+    if (devRoot) {
+        mount(devRoot);
+    }
+}
 
 // we are running through container -- export mount function
 export { mount };
