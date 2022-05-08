@@ -7,36 +7,78 @@ export default () => {
   const [imageSrc, setImageSrc] = useState('');
   const imageRef = useRef(null);
   const imageUploadButton = useRef(null);
-  const [thiefColor, setThiefColor] = useState();
-  const [paletteCount, setPaletteCount] = useState(4);
+  const [paletteCount, setPaletteCount] = useState(1);
   const [palette, setPalette] = useState([]);
 
   useEffect(() => {
-    if (imageRef.current)
-    {
-      console.log(`palette count: ${paletteCount}`);
-      const color = colorThief.getColor(imageRef.current);
-      const stolenPalette = colorThief.getPalette(imageRef.current, paletteCount);
-      console.log(stolenPalette);
+    if (!imageRef.current) return;
+
+    stealPalette().then((palette) => { setPalette(palette); });
+  }, [paletteCount]);
+
+  const stealPalette = () => {
+    return new Promise((resolve, reject) => {
+      const imagePalette = colorThief.getPalette(imageRef.current, paletteCount);
+
+      if (palette.length <= 4) { // colour thief has trouble with palettes of less than 4
+        while (imagePalette.length > paletteCount) {
+          imagePalette.pop();
+        }
+      }
+
       let rgbPalette = [];
 
-      for (const stolenPaletteColor of stolenPalette)
+      for (const color of imagePalette)
       {
-        const rgbColor = `rgb(${stolenPaletteColor[0]}, ${stolenPaletteColor[1]}, ${stolenPaletteColor[2]})`;
+        const rgbColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
         rgbPalette.push(rgbColor);
       }
 
-      setPalette(rgbPalette);
+      resolve(rgbPalette);
+    });
+  };
 
-      console.log(color);
-      const colorString = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
-      setThiefColor(colorString);
-    }
+  // const locatePalette = () => {
+  //   if (!imageRef.current) return;
+
+  //   if (!palette.length) return;
+
+  //   // create a canvas to draw the palette on
+  //   const canvas = document.createElement('canvas');
+
+  //   const imageContext = imageRef.current.getContext('2d');
+  //   const imageData = imageContext.getImageData(0, 0, imageRef.current.width, imageRef.current.height);
+  //   const pixelData = imageData.data;
+
+  //   // scan the image for each colour in the palette
+  //   for (const color of palette) {
+  //     // scan each pixel in the image
+  //     for (let x = 0; x < pixelData.length; x++) {
+  //       // if the pixel matches the colour, draw a circle
+  //       if (pixelData[x].toString() === color) {
+  //         image.drawCircle(x, y, 5, 'red');
+  //       }
+  //       else {
+  //         console.log(pixelData[x].toString());
+  //       }
+  //     }
+  //   }
+  // };
+
+  useEffect(() => {
+    if (!imageRef.current) return;
+
+    if (!imageSrc) return;
+
+    stealPalette()
+      .then((palette) => { setPalette(palette); });
+
   }, [imageSrc]);
 
   const handleImageDrop = ({ files }) => {
     const containsSingleFile = files && files.length === 1;
     if (!containsSingleFile) {
+      console.log('More/less than one file dropped');
       return;
     }
 
@@ -44,6 +86,7 @@ export default () => {
 
     const isInAcceptedImageFormat = file.type === 'image/png' || file.type === 'image/jpeg';
     if (!isInAcceptedImageFormat) {
+      console.log('not an image');
       return;
     }
 
@@ -55,6 +98,8 @@ export default () => {
     };
 
     reader.readAsDataURL(file);
+
+    imageUploadButton.current.value = ''; // clear file input in case user re-uploads same image
   };
 
   const renderImage = () => {
@@ -67,22 +112,53 @@ export default () => {
     );
   };
 
-  const onFileSelected = (e) => {
-    const file = e.target.files[0];
-    const reader = new FileReader();
+  const clearImage = () => {
+    setPalette([]);
+    setImageSrc('');
+  }
 
-    reader.onload = () => {
-      const imageUrl = reader.result;
-      setImageSrc(imageUrl);
-    };
+  const convertRgbToHex = (rgb) => {
+    const rgbArray = rgb.split(',');
+    const r = parseInt(rgbArray[0].replace('rgb(', '').trim());
+    const g = parseInt(rgbArray[1].trim());
+    const b = parseInt(rgbArray[2].replace(')', '').trim());
 
-    reader.readAsDataURL(file);
+    const hex = [
+      r.toString(16),
+      g.toString(16),
+      b.toString(16)
+    ];
+
+    return hex.join('');
   };
 
-  const clearImage = () => {
-    setImageSrc('');
-    setThiefColor('');
-  }
+  const createPaletteImage = () => {
+    // for each colour in the palette, draw a pixel of that colour
+
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+
+    canvas.width = palette.length * 100;
+    canvas.height = 100;
+
+    let position = 0;
+
+    for (const color of palette) {
+      context.fillStyle = color;
+      context.fillRect(position, 0, 100, 100);
+      position += 100;
+    }
+
+    return canvas.toDataURL();
+  };
+
+  const downloadPalette = () => {
+    const paletteImage = createPaletteImage();
+    const link = document.createElement('a');
+    link.download = 'palette.png';
+    link.href = paletteImage;
+    link.click();
+  };
 
   return (
     <div 
@@ -137,17 +213,21 @@ export default () => {
         </div>
       </DragDrop>
       <p>Value: {paletteCount}</p>
-      <input type="range" min="4" max="10" value={paletteCount} onChange={(e) => { setPaletteCount(e.target.value); }} />
-      
-      <p>Colour:</p>
-      <div style={{ backgroundColor: thiefColor, width: '50px', height: '50px'}}></div>
+      <input type="range" min="1" max="10" value={paletteCount} onChange={(e) => { setPaletteCount(e.target.value); }} />
       
       <p>Palette:</p>
-      {
-        palette.map(color => (
-          <div style={{ backgroundColor: color, width: '50px', height: '50px'}}></div>
-        ))
-      }
+      <div style={{ display: 'flex', flexDirection: 'row', gap: '5px' }}>
+        {
+          palette.map(color => (
+            <div>
+              <p>RGB: {color}</p>
+              <p>Hex: #{convertRgbToHex(color)}</p>
+              <div style={{ backgroundColor: color, width: '100px', height: '100px'}}></div>
+            </div>
+          ))
+        }
+      </div>
+      <button type="button" onClick={downloadPalette}>Download Palette</button>
       <input ref={imageUploadButton} type="file" onChange={(e) => { handleImageDrop(e.target); }} style={{ display: 'none' }} />
       <button type="button" onClick={clearImage}>Clear Image</button>
     </div>
