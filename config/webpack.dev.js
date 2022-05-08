@@ -5,6 +5,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ModuleFederationPlugin = require('webpack/lib/container/ModuleFederationPlugin');
 const commonConfig = require('./webpack.common');
 const packageJson = require ('../package.json');
+const webpack = require('webpack');
 
 const devConfig = {
     mode: 'development',
@@ -45,6 +46,9 @@ const devConfig = {
                 './projectPalette': './src/bootstrap',
             },
             shared: packageJson.dependencies,
+        }),
+        new webpack.EnvironmentPlugin({
+          BUILD_ENV: 'development',
         }),
     ],
 };

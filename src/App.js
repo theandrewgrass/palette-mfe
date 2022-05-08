@@ -8,11 +8,26 @@ export default () => {
   const imageRef = useRef(null);
   const imageUploadButton = useRef(null);
   const [thiefColor, setThiefColor] = useState();
+  const [paletteCount, setPaletteCount] = useState(4);
+  const [palette, setPalette] = useState([]);
 
   useEffect(() => {
     if (imageRef.current)
     {
+      console.log(`palette count: ${paletteCount}`);
       const color = colorThief.getColor(imageRef.current);
+      const stolenPalette = colorThief.getPalette(imageRef.current, paletteCount);
+      console.log(stolenPalette);
+      let rgbPalette = [];
+
+      for (const stolenPaletteColor of stolenPalette)
+      {
+        const rgbColor = `rgb(${stolenPaletteColor[0]}, ${stolenPaletteColor[1]}, ${stolenPaletteColor[2]})`;
+        rgbPalette.push(rgbColor);
+      }
+
+      setPalette(rgbPalette);
+
       console.log(color);
       const colorString = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
       setThiefColor(colorString);
@@ -121,7 +136,18 @@ export default () => {
           </div>
         </div>
       </DragDrop>
+      <p>Value: {paletteCount}</p>
+      <input type="range" min="4" max="10" value={paletteCount} onChange={(e) => { setPaletteCount(e.target.value); }} />
+      
+      <p>Colour:</p>
       <div style={{ backgroundColor: thiefColor, width: '50px', height: '50px'}}></div>
+      
+      <p>Palette:</p>
+      {
+        palette.map(color => (
+          <div style={{ backgroundColor: color, width: '50px', height: '50px'}}></div>
+        ))
+      }
       <input ref={imageUploadButton} type="file" onChange={(e) => { handleImageDrop(e.target); }} style={{ display: 'none' }} />
       <button type="button" onClick={clearImage}>Clear Image</button>
     </div>
