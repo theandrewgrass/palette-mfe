@@ -20,7 +20,7 @@ export default () => {
     return new Promise((resolve, reject) => {
       const imagePalette = colorThief.getPalette(imageRef.current, paletteCount);
 
-      if (palette.length <= 4) { // colour thief has trouble with palettes of less than 4
+      if (paletteCount <= 4) { // colour thief has trouble with palettes of less than 4
         while (imagePalette.length > paletteCount) {
           imagePalette.pop();
         }
@@ -160,6 +160,23 @@ export default () => {
     link.click();
   };
 
+  // TODO: add a proxy to the image url to avoid CORS issues
+  // this can be done using cloudflare workers or smth
+  // const getRandomImage = () => {
+  //   // get a random image from unsplash
+  //   const unsplashUrl = 'https://source.unsplash.com/random/700x700';
+  //   // go to unsplash url
+  //   // wait for redirect
+  //   // get the image url
+  //   // set the image src
+
+  //   fetch(unsplashUrl)
+  //     .then(response => response.url)
+  //     .then(url => {
+  //       setImageSrc(url);
+  //     });
+  // };
+
   return (
     <div 
       style={{ 
@@ -212,6 +229,7 @@ export default () => {
           </div>
         </div>
       </DragDrop>
+      {/* <button type="button" onClick={getRandomImage}>Get Random Image</button> */}
       <p>Value: {paletteCount}</p>
       <input type="range" min="1" max="10" value={paletteCount} onChange={(e) => { setPaletteCount(e.target.value); }} />
       
