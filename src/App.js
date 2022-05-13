@@ -186,6 +186,11 @@ export default () => {
     }
   };
 
+  const onColourClicked = (colour) => {
+    const newPalette = stagedPalette.filter(stagedColor => stagedColor !== colour);
+    setStagedPalette(newPalette);
+  };
+
   return (
     <div 
       style={{ 
@@ -242,7 +247,7 @@ export default () => {
       <p>Value: {paletteCount}</p>
       <input type="range" min="1" max="10" value={paletteCount} onChange={(e) => { setPaletteCount(e.target.value); }} />
 
-      <StagedPalette palette={stagedPalette} />
+      <StagedPalette palette={stagedPalette} onColourClicked={onColourClicked} />
       
       <AvailablePalette palette={availablePalette} selectedColours={stagedPalette} onColourSelected={onColourSelected} />
 
