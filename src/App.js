@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import DragDrop from './drag-drop';
 import ColorThief from 'colorthief';
+import StagedPalette from './staged-palette';
+import AvailablePalette from './available-palette';
 
 export default () => {
   const colorThief = new ColorThief();
@@ -8,35 +10,34 @@ export default () => {
   const imageRef = useRef(null);
   const imageUploadButton = useRef(null);
   const [paletteCount, setPaletteCount] = useState(1);
-  const [palette, setPalette] = useState([]);
+  
+  const [stagedPalette, setStagedPalette] = useState([]);
+  const [availablePalette, setAvailablePalette] = useState([]);
 
   useEffect(() => {
     if (!imageRef.current) return;
 
-    stealPalette().then((palette) => { setPalette(palette); });
+    stealPalette();
   }, [paletteCount]);
 
   const stealPalette = () => {
-    return new Promise((resolve, reject) => {
-      const imagePalette = colorThief.getPalette(imageRef.current, paletteCount);
-
-      if (paletteCount <= 4) { // colour thief has trouble with palettes of less than 4
-        while (imagePalette.length > paletteCount) {
-          imagePalette.pop();
+      
+      const paletteSet = new Set();
+      
+      for (let i = 0; i < 20; i++) {
+        const imagePalette = colorThief.getPalette(imageRef.current, i);
+        
+        for (const color of imagePalette) {
+          const rgbColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
+          paletteSet.add(rgbColor);
         }
       }
 
-      let rgbPalette = [];
+      const palette = Array.from(paletteSet);
 
-      for (const color of imagePalette)
-      {
-        const rgbColor = `rgb(${color[0]}, ${color[1]}, ${color[2]})`;
-        rgbPalette.push(rgbColor);
-      }
-
-      resolve(rgbPalette);
-    });
-  };
+      setStagedPalette(palette.slice(0, 4));
+      setAvailablePalette(palette);
+    };
 
   // const locatePalette = () => {
   //   if (!imageRef.current) return;
@@ -70,8 +71,7 @@ export default () => {
 
     if (!imageSrc) return;
 
-    stealPalette()
-      .then((palette) => { setPalette(palette); });
+    stealPalette();
 
   }, [imageSrc]);
 
@@ -138,12 +138,12 @@ export default () => {
     const canvas = document.createElement('canvas');
     const context = canvas.getContext('2d');
 
-    canvas.width = palette.length * 100;
+    canvas.width = stagedPalette.length * 100;
     canvas.height = 100;
 
     let position = 0;
 
-    for (const color of palette) {
+    for (const color of stagedPalette) {
       context.fillStyle = color;
       context.fillRect(position, 0, 100, 100);
       position += 100;
@@ -176,6 +176,15 @@ export default () => {
   //       setImageSrc(url);
   //     });
   // };
+
+  const onColourSelected = (colour) => {
+    if (stagedPalette.includes(colour)) {
+      const newPalette = stagedPalette.filter(stagedColor => stagedColor !== colour);
+      setStagedPalette(newPalette);
+    } else {
+      setStagedPalette([...stagedPalette, colour]);
+    }
+  };
 
   return (
     <div 
@@ -232,19 +241,11 @@ export default () => {
       {/* <button type="button" onClick={getRandomImage}>Get Random Image</button> */}
       <p>Value: {paletteCount}</p>
       <input type="range" min="1" max="10" value={paletteCount} onChange={(e) => { setPaletteCount(e.target.value); }} />
+
+      <StagedPalette palette={stagedPalette} />
       
-      <p>Palette:</p>
-      <div style={{ display: 'flex', flexDirection: 'row', gap: '5px' }}>
-        {
-          palette.map(color => (
-            <div>
-              <p>RGB: {color}</p>
-              <p>Hex: #{convertRgbToHex(color)}</p>
-              <div style={{ backgroundColor: color, width: '100px', height: '100px'}}></div>
-            </div>
-          ))
-        }
-      </div>
+      <AvailablePalette palette={availablePalette} selectedColours={stagedPalette} onColourSelected={onColourSelected} />
+
       <button type="button" onClick={downloadPalette}>Download Palette</button>
       <input ref={imageUploadButton} type="file" onChange={(e) => { handleImageDrop(e.target); }} style={{ display: 'none' }} />
       <button type="button" onClick={clearImage}>Clear Image</button>
