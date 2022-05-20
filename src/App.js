@@ -1,24 +1,51 @@
 import React, { useState, useEffect, useRef } from 'react';
-import DragDrop from './drag-drop';
 import ColorThief from 'colorthief';
 import StagedPalette from './staged-palette';
 import AvailablePalette from './available-palette';
+import styled from 'styled-components';
+import ImageUpload from './ImageUpload';
+
+const S = {};
+
+S.GridContainer = styled.div`
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto auto auto;
+  grid-template-areas:
+    "ImageUpload"
+    "StagedPalette"
+    "AvailablePalette"
+    "Export";
+`;
+
+S.ImageUploadContainer = styled.div`
+  grid-area: ImageUpload;
+  height: 500px;
+`;
+
+S.StagedPaletteContainer = styled.div`
+  grid-area: StagedPalette;
+`;
+
+S.AvailablePaletteContainer = styled.div`
+  grid-area: AvailablePalette;
+`;
+
+S.ExportContainer = styled.div`
+  grid-area: Export;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
 
 export default () => {
   const colorThief = new ColorThief();
   const [imageSrc, setImageSrc] = useState('');
   const imageRef = useRef(null);
-  const imageUploadButton = useRef(null);
-  const [paletteCount, setPaletteCount] = useState(1);
-  
   const [stagedPalette, setStagedPalette] = useState([]);
   const [availablePalette, setAvailablePalette] = useState([]);
-
-  useEffect(() => {
-    if (!imageRef.current) return;
-
-    stealPalette();
-  }, [paletteCount]);
 
   const stealPalette = () => {
       
@@ -66,42 +93,6 @@ export default () => {
   //   }
   // };
 
-  useEffect(() => {
-    if (!imageRef.current) return;
-
-    if (!imageSrc) return;
-
-    stealPalette();
-
-  }, [imageSrc]);
-
-  const handleImageDrop = ({ files }) => {
-    const containsSingleFile = files && files.length === 1;
-    if (!containsSingleFile) {
-      console.log('More/less than one file dropped');
-      return;
-    }
-
-    const file = files[0];
-
-    const isInAcceptedImageFormat = file.type === 'image/png' || file.type === 'image/jpeg';
-    if (!isInAcceptedImageFormat) {
-      console.log('not an image');
-      return;
-    }
-
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const imageUrl = reader.result;
-      setImageSrc(imageUrl);
-    };
-
-    reader.readAsDataURL(file);
-
-    imageUploadButton.current.value = ''; // clear file input in case user re-uploads same image
-  };
-
   const renderImage = () => {
     return (
       <img 
@@ -112,8 +103,18 @@ export default () => {
     );
   };
 
+  useEffect(() => {
+    if (!imageRef.current) return;
+
+    if (!imageSrc) return;
+
+    stealPalette();
+
+  }, [imageSrc]);
+
   const clearImage = () => {
-    setPalette([]);
+    setStagedPalette([]);
+    setAvailablePalette([]);
     setImageSrc('');
   }
 
@@ -192,68 +193,27 @@ export default () => {
   };
 
   return (
-    <div 
-      style={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        gap: '15px' 
-      }}
-    >
-      <DragDrop handleDrop={handleImageDrop}>
-        <div 
-          style={{
-            padding: '5px',
-            boxSizing: 'border-box',
-            width: '100%', 
-            height: '500px', 
-          }}
-        >
-          <div 
-            style={{ 
-              display: 'flex', 
-              justifyContent: 'center', 
-              alignItems: 'center', 
-              height: '100%',
-              width: '100%',
-              border: '1px dashed black',
-              boxSizing: 'border-box'
-            }}
-          >
+    <S.GridContainer>
+    <S.ImageUploadContainer>
+      { imageSrc ? renderImage() : <ImageUpload onImageUpload={setImageSrc} /> }
+    </S.ImageUploadContainer>
 
-            {
-              imageSrc ? (
-                renderImage()
-              ) : (
-                <div 
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '5px',
-                  }}
-                >
-                  <p style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '5px', margin: '0' }}>
-                    <span>Drag & Drop to Upload Image</span>
-                    <span>OR</span>
-                  </p>
-                  <button type="button" onClick={() => { imageUploadButton.current.click(); }}>Upload Image</button>
-                </div>
-              )
-            }
-
-          </div>
-        </div>
-      </DragDrop>
-      {/* <button type="button" onClick={getRandomImage}>Get Random Image</button> */}
-      <p>Value: {paletteCount}</p>
-      <input type="range" min="1" max="10" value={paletteCount} onChange={(e) => { setPaletteCount(e.target.value); }} />
-
-      <StagedPalette palette={stagedPalette} onColourClicked={onColourClicked} />
-      
-      <AvailablePalette palette={availablePalette} selectedColours={stagedPalette} onColourSelected={onColourSelected} />
-
-      <button type="button" onClick={downloadPalette}>Download Palette</button>
-      <input ref={imageUploadButton} type="file" onChange={(e) => { handleImageDrop(e.target); }} style={{ display: 'none' }} />
-      <button type="button" onClick={clearImage}>Clear Image</button>
-    </div>
+    { imageSrc &&
+      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+        <S.StagedPaletteContainer>
+          <StagedPalette palette={stagedPalette} onColourClicked={onColourClicked} />
+        </S.StagedPaletteContainer>
+        
+        <S.AvailablePaletteContainer>
+          <AvailablePalette palette={availablePalette} selectedColours={stagedPalette} onColourSelected={onColourSelected} />
+        </S.AvailablePaletteContainer>
+        
+        <S.ExportContainer>
+          <button type="button" onClick={downloadPalette}>Download Palette</button>
+          <button type="button" onClick={clearImage}>Clear Image</button>
+        </S.ExportContainer>
+      </div>    
+    }
+  </S.GridContainer>
   );
 }
