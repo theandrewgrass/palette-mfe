@@ -3,17 +3,23 @@ import styled from 'styled-components';
 
 let S = {};
 
+S.AvailablePalette = styled.section`
+  overflow-y: auto;
+  height: 240px;
+  padding: 15px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
 S.List = styled.ul`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 15px;
-  padding: 15px;
-  box-sizing: border-box;
+  gap: 10px;
   list-style: none;
-  min-height: 120px;
-  overflow-y: overlay;
-  height: 240px;
-  box-shadow: 5px 5px 10px dimgrey;
+  padding: 0;
+  margin: 0;
 
   &:after {
     content: '';
@@ -22,19 +28,22 @@ S.List = styled.ul`
 `;
 
 S.ListItem = styled.li`
-  height: 120px;
-  width: 120px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 `;
 
 S.ColourBlock = styled.div`
-  width: 100%;
-  height: 100%;
+  width: 120px;
+  height: 120px;
   background-color: ${props => props.colour};
   display: flex;
   justify-content: center;
   align-items: center;
   border: 5px solid white;
   outline: ${props => props.selected ? '1px solid black' : 'none'};
+  box-shadow: 1px 1px 2px dimgrey;
+  box-sizing: border-box;
 `;
 
 S.ColourSelect = styled.button`
@@ -52,8 +61,7 @@ S.ColourSelect = styled.button`
 
 const AvailablePalette = ({ palette, selectedColours, onColourSelected }) => {
   return (
-    <div>
-      <p>Available Palette</p>
+    <S.AvailablePalette>
       <S.List>
         {palette.map((colour, index) => {
           const selected = selectedColours.includes(colour);
@@ -74,7 +82,7 @@ const AvailablePalette = ({ palette, selectedColours, onColourSelected }) => {
           )
         })}
       </S.List>
-    </div>
+    </S.AvailablePalette>
   )
 };
 
