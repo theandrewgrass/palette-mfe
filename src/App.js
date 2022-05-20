@@ -9,16 +9,9 @@ export default () => {
   const [imageSrc, setImageSrc] = useState('');
   const imageRef = useRef(null);
   const imageUploadButton = useRef(null);
-  const [paletteCount, setPaletteCount] = useState(1);
   
   const [stagedPalette, setStagedPalette] = useState([]);
   const [availablePalette, setAvailablePalette] = useState([]);
-
-  useEffect(() => {
-    if (!imageRef.current) return;
-
-    stealPalette();
-  }, [paletteCount]);
 
   const stealPalette = () => {
       
@@ -192,68 +185,156 @@ export default () => {
   };
 
   return (
-    <div 
-      style={{ 
-        display: 'flex', 
-        flexDirection: 'column', 
-        gap: '15px' 
-      }}
-    >
-      <DragDrop handleDrop={handleImageDrop}>
-        <div 
-          style={{
-            padding: '5px',
-            boxSizing: 'border-box',
-            width: '100%', 
-            height: '500px', 
-          }}
-        >
-          <div 
-            style={{ 
-              display: 'flex', 
-              justifyContent: 'center', 
-              alignItems: 'center', 
-              height: '100%',
-              width: '100%',
-              border: '1px dashed black',
-              boxSizing: 'border-box'
-            }}
-          >
+    <div style={{ 
+      border: "1px solid blue",
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      gap: "10px",
+      padding: "5px",
+      boxSizing: "border-box",
+      height: "100%"
+    }}>
+      <div style={{ 
+        border: "1px solid yellow",
+        display: "flex", 
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100%",
+        boxSizing: "border-box",
+        gap: "10px",
+        padding: "5px",
+        height: "100%",
+        flex: 2
+      }}>
+        <div style={{ 
+          border: "1px solid red", 
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          flex: 1,
+          height: "100%",
+        }}>
+          <h2>Image Upload</h2>
+        </div>
 
-            {
-              imageSrc ? (
-                renderImage()
-              ) : (
-                <div 
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '5px',
-                  }}
-                >
-                  <p style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '5px', margin: '0' }}>
-                    <span>Drag & Drop to Upload Image</span>
-                    <span>OR</span>
-                  </p>
-                  <button type="button" onClick={() => { imageUploadButton.current.click(); }}>Upload Image</button>
-                </div>
-              )
-            }
+        <div style={{ 
+          border: "1px solid green",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          flex: 1,
+          gap: "10px",
+          padding: "5px",
+          height: "100%",
+          boxSizing: "border-box"
+        }}>
+          <div style={{ 
+            border: "1px solid orange", 
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            boxSizing: "border-box",
+            flex: 1
+          }}>
+            <h2>Staged</h2>
+          </div>
 
+          <div style={{ 
+            border: "1px solid purple", 
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            boxSizing: "border-box",
+            flex: 1
+          }}>
+            <h2>Available</h2>
           </div>
         </div>
-      </DragDrop>
-      {/* <button type="button" onClick={getRandomImage}>Get Random Image</button> */}
-      <p>Value: {paletteCount}</p>
-      <input type="range" min="1" max="10" value={paletteCount} onChange={(e) => { setPaletteCount(e.target.value); }} />
-
-      <StagedPalette palette={stagedPalette} onColourClicked={onColourClicked} />
-      
-      <AvailablePalette palette={availablePalette} selectedColours={stagedPalette} onColourSelected={onColourSelected} />
-
-      <button type="button" onClick={downloadPalette}>Download Palette</button>
-      <input ref={imageUploadButton} type="file" onChange={(e) => { handleImageDrop(e.target); }} style={{ display: 'none' }} />
-      <button type="button" onClick={clearImage}>Clear Image</button>
+      </div>
+      <div style={{ 
+        border: "1px solid pink", 
+        width: "100%",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        boxSizing: "border-box",
+        flex: 1
+      }}>
+        <h2>Exports</h2>
+      </div>
     </div>
+
+    // <div>
+    //   <div 
+    //     style={{ 
+    //       display: 'flex', 
+    //       flexDirection: 'row', 
+    //       gap: '15px' 
+    //     }}
+    //   >
+    //     <DragDrop handleDrop={handleImageDrop}>
+    //       <div 
+    //         style={{
+    //           padding: '5px',
+    //           boxSizing: 'border-box',
+    //           width: '100%', 
+    //           height: '500px', 
+    //         }}
+    //       >
+    //         <div 
+    //           style={{ 
+    //             display: 'flex', 
+    //             justifyContent: 'center', 
+    //             alignItems: 'center', 
+    //             height: '100%',
+    //             width: '100%',
+    //             border: '1px dashed black',
+    //             boxSizing: 'border-box'
+    //           }}
+    //         >
+
+    //           {
+    //             imageSrc ? (
+    //               renderImage()
+    //             ) : (
+    //               <div 
+    //                 style={{
+    //                   display: 'flex',
+    //                   flexDirection: 'column',
+    //                   gap: '5px',
+    //                 }}
+    //               >
+    //                 <p style={{ display: 'inline-flex', flexDirection: 'column', alignItems: 'center', gap: '5px', margin: '0' }}>
+    //                   <span>Drag & Drop to Upload Image</span>
+    //                   <span>OR</span>
+    //                 </p>
+    //                 <button type="button" onClick={() => { imageUploadButton.current.click(); }}>Upload Image</button>
+    //               </div>
+    //             )
+    //           }
+
+    //         </div>
+    //       </div>
+    //     </DragDrop>
+
+    //     <div>
+    //       <StagedPalette palette={stagedPalette} onColourClicked={onColourClicked} />
+          
+    //       <AvailablePalette palette={availablePalette} selectedColours={stagedPalette} onColourSelected={onColourSelected} />
+    //     </div>
+
+
+    //   </div>
+
+    //   <button type="button" onClick={downloadPalette}>Download Palette</button>
+    //   <input ref={imageUploadButton} type="file" onChange={(e) => { handleImageDrop(e.target); }} style={{ display: 'none' }} />
+    //   <button type="button" onClick={clearImage}>Clear Image</button>
+    // </div>
   );
 }
