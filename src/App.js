@@ -10,14 +10,14 @@ const S = {};
 S.GridContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 50vh 500px auto;
+  grid-template-rows: minmax(500px,50vh) 500px auto;
   grid-template-areas:
     "ImageUpload"
     "AvailablePalette"
     "Export";
 
   @media screen and (max-width: 768px) {
-    grid-template-rows: 100vh 500px auto;
+    grid-template-rows: minmax(500px,100vh) 500px auto;
   }
 `;
 
