@@ -1,5 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 
+// TODO: make drag and drop into react hook
+
 const DragDrop = (props) => {
     const { 
       handleDrop,
@@ -62,7 +64,7 @@ const DragDrop = (props) => {
     };
 
     return (
-        <div ref={dropRef}>
+        <div style={{ height: "100%" }} ref={dropRef}>
             {children}
         </div>
     );

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Fragment } from 'react';
 import styled from 'styled-components';
 
 const S = {};
@@ -15,33 +15,49 @@ S.StagedPalette = styled.section`
 
 S.List = styled.ul`
   display: grid;
+  grid-auto-flow: row;
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 10px;
+  grid-template-rows: repeat(auto-fill, minmax(120px, 1fr));
+  grid-auto-rows: 1fr;
+  grid-gap: 15px;
   list-style: none;
-  padding: 0;
+  padding: 15px;
   margin: 0;
+  box-sizing: border-box;
+
+  background: rgba(255,255,255,0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  max-width: 1095px;
+
+  @media screen and (max-width: 768px) {
+    max-width: unset;
+  }
 `;
 
 S.ListItem = styled.li`
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
+  height: 100%;
 `;
 
 S.ColourBlock = styled.div`
-  width: 120px;
-  height: 120px;
+  flex: 1;
   background-color: ${props => props.colour};
   display: flex;
   justify-content: center;
   align-items: center;
   box-shadow: 1px 1px 2px dimgrey;
+  aspect-ratio: 1;
 `;
 
 S.ColourSelect = styled.button`
   background-color: white;
   font-size: 24px;
-  line-height: 24px;
+  line-height: 30px;
   color: black;
   border: none;
   width: 30px;
@@ -53,7 +69,7 @@ S.ColourSelect = styled.button`
 
 const StagedPalette = ({ palette, onColourClicked }) => {
   return (
-    <S.StagedPalette>
+    <Fragment>
       <S.List>
         {palette.map((colour, index) => {
           return (
@@ -67,7 +83,7 @@ const StagedPalette = ({ palette, onColourClicked }) => {
           )
         })}
       </S.List>
-    </S.StagedPalette>
+    </Fragment>
   )
 };
 
