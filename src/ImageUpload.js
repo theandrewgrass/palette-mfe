@@ -39,7 +39,7 @@ const ImageUpload = ({ onImageUpload }) => {
           padding: '5px',
           boxSizing: 'border-box',
           width: '100%', 
-          height: '500px', 
+          height: '100%', 
         }}
       >
         <div 

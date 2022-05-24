@@ -10,25 +10,43 @@ const S = {};
 S.GridContainer = styled.div`
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: auto auto auto auto;
+  grid-template-rows: 50vh 500px auto;
   grid-template-areas:
     "ImageUpload"
-    "StagedPalette"
     "AvailablePalette"
     "Export";
+
+  @media screen and (max-width: 768px) {
+    grid-template-rows: 100vh 500px auto;
+  }
 `;
 
 S.ImageUploadContainer = styled.div`
   grid-area: ImageUpload;
-  height: 500px;
 `;
 
-S.StagedPaletteContainer = styled.div`
-  grid-area: StagedPalette;
+S.StagedPaletteContainer = styled.section`
+  grid-area: ImageUpload;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 15px;
+  
+  @media screen and (max-width: 768px) {
+    align-items: unset;
+  }
+
+  // glassmorphism
+  /* background: rgba(255,255,255,0.6); */
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
 `;
 
 S.AvailablePaletteContainer = styled.div`
   grid-area: AvailablePalette;
+  overflow-y: auto;
 `;
 
 S.ExportContainer = styled.div`
@@ -183,6 +201,11 @@ export default () => {
       const newPalette = stagedPalette.filter(stagedColor => stagedColor !== colour);
       setStagedPalette(newPalette);
     } else {
+
+      if (stagedPalette.length >= 8) {
+        console.log("You've reached the maximum number of colours"); // should maybe disable colour selection in available palette instead
+        return;
+      }
       setStagedPalette([...stagedPalette, colour]);
     }
   };
@@ -199,20 +222,21 @@ export default () => {
     </S.ImageUploadContainer>
 
     { imageSrc &&
-      <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
-        <S.StagedPaletteContainer>
-          <StagedPalette palette={stagedPalette} onColourClicked={onColourClicked} />
-        </S.StagedPaletteContainer>
-        
-        <S.AvailablePaletteContainer>
-          <AvailablePalette palette={availablePalette} selectedColours={stagedPalette} onColourSelected={onColourSelected} />
-        </S.AvailablePaletteContainer>
-        
-        <S.ExportContainer>
-          <button type="button" onClick={downloadPalette}>Download Palette</button>
-          <button type="button" onClick={clearImage}>Clear Image</button>
-        </S.ExportContainer>
-      </div>    
+      <S.StagedPaletteContainer>
+        <StagedPalette palette={stagedPalette} onColourClicked={onColourClicked} />
+      </S.StagedPaletteContainer>
+    }
+
+    { imageSrc &&
+      <S.AvailablePaletteContainer>
+        <AvailablePalette palette={availablePalette} selectedColours={stagedPalette} onColourSelected={onColourSelected} />
+      </S.AvailablePaletteContainer>
+    }
+    { imageSrc &&
+      <S.ExportContainer>
+        <button type="button" onClick={downloadPalette}>Download Palette</button>
+        <button type="button" onClick={clearImage}>Clear Image</button>
+      </S.ExportContainer>
     }
   </S.GridContainer>
   );

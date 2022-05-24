@@ -5,7 +5,6 @@ let S = {};
 
 S.AvailablePalette = styled.section`
   overflow-y: auto;
-  height: 240px;
   padding: 15px;
   box-sizing: border-box;
   display: flex;
@@ -49,7 +48,7 @@ S.ColourBlock = styled.div`
 S.ColourSelect = styled.button`
   background-color: white;
   font-size: 24px;
-  line-height: 24px;
+  line-height: 30px;
   color: black;
   border: none;
   width: 30px;
