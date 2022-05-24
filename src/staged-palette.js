@@ -29,11 +29,7 @@ S.List = styled.ul`
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
 
-  max-width: 1095px;
-
-  @media screen and (max-width: 768px) {
-    max-width: unset;
-  }
+  width: 100%;
 `;
 
 S.ListItem = styled.li`
